@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
         switch(playerState)
         {
             case PLAYERSTATE.IDLE:
+                player.transform.rotation = Quaternion.identity;
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     playerState = PLAYERSTATE.JUMP;
@@ -84,12 +85,14 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.RUNBACK:
                 if (Input.GetKeyUp(KeyCode.S))
                 {
+                    //player.transform.rotation = new Vector3(0f, 28.697f, 0f);
                     playerState = PLAYERSTATE.IDLE;
                 }
                 break;
             case PLAYERSTATE.MOVER:
                 if(Input.GetKeyUp(KeyCode.D))
                 {
+                    //player.transform.rotation = new Vector3(0f, 81.294f, 0f);
                     playerState = PLAYERSTATE.IDLE;
                 }
                 break;
