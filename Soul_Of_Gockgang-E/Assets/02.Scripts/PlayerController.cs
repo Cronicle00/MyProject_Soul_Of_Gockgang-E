@@ -12,7 +12,9 @@ public class PlayerController : MonoBehaviour
     public bool isIdle = false;
     public bool isJump = false;
     public bool isDead = false;
+    public bool isDamaged = false;
     public bool isATK = false;
+    private Animator playerAnim;
 
     public enum PLAYERSTATE
     {
@@ -30,6 +32,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        playerAnim = gameObject.GetComponentInChildren<Animator>();
         playerState = PLAYERSTATE.IDLE;
     }
 
@@ -45,16 +48,24 @@ public class PlayerController : MonoBehaviour
         switch(playerState)
         {
             case PLAYERSTATE.IDLE:
-
-                if(Input.GetKeyDown(KeyCode.Space))
+                isJump = false;
+                isDamaged = false;
+                isDead = false;
+                isIdle = true;
+                if (Input.GetKeyDown(KeyCode.Space))
                 {
                     playerState = PLAYERSTATE.JUMP;
                     
+                }
+                if(Input.GetKey(KeyCode.W))
+                {
+                    playerState = PLAYERSTATE.RUN;
                 }
                 break;
 
             case PLAYERSTATE.RUN:
                 isIdle = false;
+                
                 break;
 
             case PLAYERSTATE.JUMP:
@@ -80,5 +91,6 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+        playerAnim.SetInteger("PLAYERSTATE", (int)playerState);
     }
 }
