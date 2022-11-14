@@ -178,6 +178,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Y Bot
       objectReference: {fileID: 0}
+    - target: {fileID: 5822821947120931875, guid: 6249e9249894e9b4ea1f3f0ccd388971, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fbaf2f65ef898b949be23911cfecc92d, type: 2}
     - target: {fileID: 5866666021909216657, guid: 6249e9249894e9b4ea1f3f0ccd388971, type: 3}
       propertyPath: m_Controller
       value: 
@@ -530,14 +534,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -2.69}
+  m_LocalRotation: {x: 0.13627303, y: -0, z: -0, w: 0.99067134}
+  m_LocalPosition: {x: 0, y: 2.34, z: -2.86}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2007724788}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 15.664, y: 0, z: 0}
 --- !u!4 &1059885586 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 6249e9249894e9b4ea1f3f0ccd388971, type: 3}
@@ -626,13 +630,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 1.72
+  m_Radius: 0.3
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.95, z: 0}
 --- !u!114 &2007724790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -646,3 +650,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  isIdle: 0
+  isJump: 0
+  isDead: 0
+  isDamaged: 0
+  isATK: 0
+  playerState: 0

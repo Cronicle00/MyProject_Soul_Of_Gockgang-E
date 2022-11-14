@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     Vector3 moveDirection;
 
     private CharacterController characterController;
-
+    public GameObject player;
     public bool isIdle = false;
     public bool isJump = false;
     public bool isDead = false;
@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     {
         IDLE =0,
         RUN,
+        RUNBACK,
+        MOVER,
+        MOVEL,
         JUMP,
         ATTACK,
         TURNSLASH,
@@ -48,25 +51,55 @@ public class PlayerController : MonoBehaviour
         switch(playerState)
         {
             case PLAYERSTATE.IDLE:
-                isJump = false;
-                isDamaged = false;
-                isDead = false;
-                isIdle = true;
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     playerState = PLAYERSTATE.JUMP;
                     
                 }
-                if(Input.GetKey(KeyCode.W))
+                if(Input.GetKeyDown(KeyCode.W))
                 {
                     playerState = PLAYERSTATE.RUN;
                 }
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    playerState = PLAYERSTATE.RUNBACK;
+                }
+                if(Input.GetKeyDown(KeyCode.D))
+                {
+                    playerState = PLAYERSTATE.MOVER;
+                }
+                if (Input.GetKeyDown(KeyCode.A))
+                {
+                    playerState = PLAYERSTATE.MOVEL;
+                }
                 break;
 
+            #region KEYUP
             case PLAYERSTATE.RUN:
-                isIdle = false;
-                
+                if(Input.GetKeyUp(KeyCode.W))
+                {
+                    playerState = PLAYERSTATE.IDLE;
+                }
                 break;
+            case PLAYERSTATE.RUNBACK:
+                if (Input.GetKeyUp(KeyCode.S))
+                {
+                    playerState = PLAYERSTATE.IDLE;
+                }
+                break;
+            case PLAYERSTATE.MOVER:
+                if(Input.GetKeyUp(KeyCode.D))
+                {
+                    playerState = PLAYERSTATE.IDLE;
+                }
+                break;
+            case PLAYERSTATE.MOVEL:
+                if(Input.GetKeyUp(KeyCode.A))
+                {
+                    playerState = PLAYERSTATE.IDLE;
+                }
+                break;
+            #endregion
 
             case PLAYERSTATE.JUMP:
                 isIdle = false;
