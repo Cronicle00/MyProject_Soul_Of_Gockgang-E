@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5.0f;
     Vector3 moveDirection;
+    public float jumpSpeedF = 8.0f;
+    public float gravity = 9.8f;
 
     private CharacterController characterController;
     public GameObject player;
@@ -30,6 +32,7 @@ public class PlayerController : MonoBehaviour
         ATTACK,
         TURNSLASH,
         BLOCK,
+        RUNWITHSWORD = 10,
         DEAD
     }
     public PLAYERSTATE playerState;
@@ -102,6 +105,7 @@ public class PlayerController : MonoBehaviour
             #endregion
 
             case PLAYERSTATE.JUMP:
+                IdleState();
                 isIdle = false;
                 break;
             case PLAYERSTATE.ATTACK_IDLE:
@@ -136,7 +140,12 @@ public class PlayerController : MonoBehaviour
                     playerState = PLAYERSTATE.ATTACK_IDLE;
                 }
                 break;
-
+            case PLAYERSTATE.RUNWITHSWORD:
+                if (Input.GetKeyUp(KeyCode.W))
+                {
+                    IdleState();
+                }
+                break;
             case PLAYERSTATE.DEAD:
                 isIdle = false;
                 break;
@@ -144,6 +153,7 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+        moveDirection.y -= gravity * Time.deltaTime;
         playerAnim.SetInteger("PLAYERSTATE", (int)playerState);
     }
 
@@ -158,7 +168,7 @@ public class PlayerController : MonoBehaviour
             }
             if (Input.GetKey(KeyCode.W))
             {
-                playerState = PLAYERSTATE.RUN;
+                RunState();
             }
             if (Input.GetKey(KeyCode.S))
             {
@@ -179,6 +189,14 @@ public class PlayerController : MonoBehaviour
             {
                 playerState = PLAYERSTATE.ATTACK_IDLE;
             }
+            if(characterController.isGrounded)
+            {
+                if (Input.GetButton("jump"))
+                {
+                    moveDirection.y = jumpSpeedF;
+                }
+                playerState = PLAYERSTATE.JUMP;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
@@ -186,7 +204,7 @@ public class PlayerController : MonoBehaviour
             isGuard = true;
         }
     }
-    public void IdleState()
+    private void IdleState()
     {
         if (isATK_Idle)
         {
@@ -195,6 +213,17 @@ public class PlayerController : MonoBehaviour
         else
         {
             playerState = PLAYERSTATE.IDLE;
+        }
+    }
+    private void RunState()
+    {
+        if (isATK_Idle)
+        {
+            playerState = PLAYERSTATE.RUNWITHSWORD;
+        }
+        else
+        {
+            playerState = PLAYERSTATE.RUN;
         }
     }
     public void Attacking()
