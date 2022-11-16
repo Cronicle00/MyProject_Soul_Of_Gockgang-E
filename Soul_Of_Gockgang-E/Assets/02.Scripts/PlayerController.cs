@@ -24,9 +24,10 @@ public class PlayerController : MonoBehaviour
         MOVER,
         MOVEL,
         JUMP,
+        ATTACK_IDLE,
         ATTACK,
         TURNSLASH,
-        GUARD,
+        BLOCK,
         DEAD
     }
     public PLAYERSTATE playerState;
@@ -52,27 +53,7 @@ public class PlayerController : MonoBehaviour
         {
             case PLAYERSTATE.IDLE:
                 player.transform.rotation = Quaternion.identity;
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    playerState = PLAYERSTATE.JUMP;
-                    
-                }
-                if(Input.GetKeyDown(KeyCode.W))
-                {
-                    playerState = PLAYERSTATE.RUN;
-                }
-                if (Input.GetKeyDown(KeyCode.S))
-                {
-                    playerState = PLAYERSTATE.RUNBACK;
-                }
-                if(Input.GetKeyDown(KeyCode.D))
-                {
-                    playerState = PLAYERSTATE.MOVER;
-                }
-                if (Input.GetKeyDown(KeyCode.A))
-                {
-                    playerState = PLAYERSTATE.MOVEL;
-                }
+                InputChecker();
                 break;
 
             #region KEYUP
@@ -85,21 +66,33 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.RUNBACK:
                 if (Input.GetKeyUp(KeyCode.S))
                 {
-                    //player.transform.rotation = new Vector3(0f, 28.697f, 0f);
                     playerState = PLAYERSTATE.IDLE;
                 }
                 break;
             case PLAYERSTATE.MOVER:
                 if(Input.GetKeyUp(KeyCode.D))
                 {
-                    //player.transform.rotation = new Vector3(0f, 81.294f, 0f);
-                    playerState = PLAYERSTATE.IDLE;
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        playerState = PLAYERSTATE.MOVEL;
+                    }
+                    else
+                    {
+                        playerState = PLAYERSTATE.IDLE;
+                    }
                 }
                 break;
             case PLAYERSTATE.MOVEL:
                 if(Input.GetKeyUp(KeyCode.A))
                 {
-                    playerState = PLAYERSTATE.IDLE;
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        playerState = PLAYERSTATE.MOVER;
+                    }
+                    else
+                    {
+                        playerState = PLAYERSTATE.IDLE;
+                    }
                 }
                 break;
             #endregion
@@ -107,17 +100,36 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.JUMP:
                 isIdle = false;
                 break;
+            case PLAYERSTATE.ATTACK_IDLE:
+                isIdle = false;
+                if(Input.GetKey(KeyCode.Mouse0))
+                {
+                    playerState = PLAYERSTATE.ATTACK;
+                }
+                if (Input.GetKeyDown(KeyCode.Mouse1))
+                {
+                    playerState = PLAYERSTATE.BLOCK;
+                    player.transform.rotation = Quaternion.Euler(0, 58f, 0);
+                }
+                break;
 
             case PLAYERSTATE.ATTACK:
                 isIdle = false;
+                    playerState = PLAYERSTATE.ATTACK_IDLE;
+                    player.transform.rotation = Quaternion.Euler(0, 41f, 0);
                 break;
 
             case PLAYERSTATE.TURNSLASH:
                 isIdle = false;
                 break;
 
-            case PLAYERSTATE.GUARD:
+            case PLAYERSTATE.BLOCK:
                 isIdle = false;
+                if(Input.GetKeyUp(KeyCode.Mouse1))
+                {
+                    playerState = PLAYERSTATE.ATTACK_IDLE;
+                    player.transform.rotation = Quaternion.Euler(0, 41f, 0);
+                }
                 break;
 
             case PLAYERSTATE.DEAD:
@@ -128,5 +140,43 @@ public class PlayerController : MonoBehaviour
                 break;
         }
         playerAnim.SetInteger("PLAYERSTATE", (int)playerState);
+    }
+
+    public void InputChecker()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            playerState = PLAYERSTATE.JUMP;
+
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            playerState = PLAYERSTATE.RUN;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            playerState = PLAYERSTATE.RUNBACK;
+            player.transform.rotation = Quaternion.Euler(0f, 28.697f, 0f);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            playerState = PLAYERSTATE.MOVER;
+            player.transform.rotation = Quaternion.Euler(0, 60f, 0);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            playerState = PLAYERSTATE.MOVEL;
+            player.transform.rotation = Quaternion.Euler(0, 60f, 0);
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            playerState = PLAYERSTATE.ATTACK_IDLE;
+            player.transform.rotation = Quaternion.Euler(0, 41f, 0);
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            playerState = PLAYERSTATE.BLOCK;
+            player.transform.rotation = Quaternion.Euler(0, 58f, 0);
+        }
     }
 }

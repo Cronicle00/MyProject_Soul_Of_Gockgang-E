@@ -547,6 +547,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 6249e9249894e9b4ea1f3f0ccd388971, type: 3}
   m_PrefabInstance: {fileID: 218687711}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1221306112 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6249e9249894e9b4ea1f3f0ccd388971, type: 3}
+  m_PrefabInstance: {fileID: 218687711}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1499870485 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6249e9249894e9b4ea1f3f0ccd388971, type: 3}
@@ -650,6 +655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  player: {fileID: 1221306112}
   isIdle: 0
   isJump: 0
   isDead: 0
