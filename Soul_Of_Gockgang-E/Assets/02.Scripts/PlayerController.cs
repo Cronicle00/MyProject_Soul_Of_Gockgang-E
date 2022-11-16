@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     public bool isDead = false;
     public bool isDamaged = false;
     public bool isATK = false;
+    public bool isATK_Idle = false;
+    public bool isGuard = false;
     private Animator playerAnim;
 
     public enum PLAYERSTATE
@@ -52,6 +54,8 @@ public class PlayerController : MonoBehaviour
         switch(playerState)
         {
             case PLAYERSTATE.IDLE:
+                isGuard = false;
+                isATK_Idle = false;
                 player.transform.rotation = Quaternion.identity;
                 InputChecker();
                 break;
@@ -60,13 +64,13 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.RUN:
                 if(Input.GetKeyUp(KeyCode.W))
                 {
-                    playerState = PLAYERSTATE.IDLE;
+                    IdleState();
                 }
                 break;
             case PLAYERSTATE.RUNBACK:
                 if (Input.GetKeyUp(KeyCode.S))
                 {
-                    playerState = PLAYERSTATE.IDLE;
+                    IdleState();
                 }
                 break;
             case PLAYERSTATE.MOVER:
@@ -78,7 +82,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else
                     {
-                        playerState = PLAYERSTATE.IDLE;
+                        IdleState();
                     }
                 }
                 break;
@@ -91,7 +95,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else
                     {
-                        playerState = PLAYERSTATE.IDLE;
+                        IdleState();
                     }
                 }
                 break;
@@ -101,22 +105,24 @@ public class PlayerController : MonoBehaviour
                 isIdle = false;
                 break;
             case PLAYERSTATE.ATTACK_IDLE:
+                isATK_Idle = true;
                 isIdle = false;
+                isGuard = false;
                 if(Input.GetKey(KeyCode.Mouse0))
                 {
+                    Attacking();
                     playerState = PLAYERSTATE.ATTACK;
                 }
                 if (Input.GetKeyDown(KeyCode.Mouse1))
                 {
                     playerState = PLAYERSTATE.BLOCK;
-                    player.transform.rotation = Quaternion.Euler(0, 58f, 0);
                 }
+                InputChecker();
                 break;
 
             case PLAYERSTATE.ATTACK:
                 isIdle = false;
-                    playerState = PLAYERSTATE.ATTACK_IDLE;
-                    player.transform.rotation = Quaternion.Euler(0, 41f, 0);
+                playerState = PLAYERSTATE.ATTACK_IDLE;
                 break;
 
             case PLAYERSTATE.TURNSLASH:
@@ -128,7 +134,6 @@ public class PlayerController : MonoBehaviour
                 if(Input.GetKeyUp(KeyCode.Mouse1))
                 {
                     playerState = PLAYERSTATE.ATTACK_IDLE;
-                    player.transform.rotation = Quaternion.Euler(0, 41f, 0);
                 }
                 break;
 
@@ -144,39 +149,56 @@ public class PlayerController : MonoBehaviour
 
     public void InputChecker()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(isGuard == false)
         {
-            playerState = PLAYERSTATE.JUMP;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                playerState = PLAYERSTATE.JUMP;
 
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            playerState = PLAYERSTATE.RUN;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            playerState = PLAYERSTATE.RUNBACK;
-            player.transform.rotation = Quaternion.Euler(0f, 28.697f, 0f);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            playerState = PLAYERSTATE.MOVER;
-            player.transform.rotation = Quaternion.Euler(0, 60f, 0);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            playerState = PLAYERSTATE.MOVEL;
-            player.transform.rotation = Quaternion.Euler(0, 60f, 0);
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            playerState = PLAYERSTATE.ATTACK_IDLE;
-            player.transform.rotation = Quaternion.Euler(0, 41f, 0);
+            }
+            if (Input.GetKey(KeyCode.W))
+            {
+                playerState = PLAYERSTATE.RUN;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                playerState = PLAYERSTATE.RUNBACK;
+
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                playerState = PLAYERSTATE.MOVER;
+
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                playerState = PLAYERSTATE.MOVEL;
+
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                playerState = PLAYERSTATE.ATTACK_IDLE;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             playerState = PLAYERSTATE.BLOCK;
-            player.transform.rotation = Quaternion.Euler(0, 58f, 0);
+            isGuard = true;
         }
+    }
+    public void IdleState()
+    {
+        if (isATK_Idle)
+        {
+            playerState = PLAYERSTATE.ATTACK_IDLE;
+        }
+        else
+        {
+            playerState = PLAYERSTATE.IDLE;
+        }
+    }
+    public void Attacking()
+    {
+        playerAnim.SetTrigger("SLASH_COMBO");
     }
 }
