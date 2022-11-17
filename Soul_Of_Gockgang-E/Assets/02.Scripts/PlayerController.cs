@@ -4,20 +4,23 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public Transform cameraTransform;
+
     public float moveSpeed = 5.0f;
-    Vector3 moveDirection;
-    public float jumpSpeedF = 8.0f;
-    public float gravity = 9.8f;
+    private Vector3 moveDirection = Vector3.zero;
+    public float jumpSpeed = 10f;
+    public float gravity = -20f;
+    public float yVelocity = 0;
 
     private CharacterController characterController;
     public GameObject player;
-    public bool isIdle = false;
-    public bool isJump = false;
-    public bool isDead = false;
-    public bool isDamaged = false;
-    public bool isATK = false;
-    public bool isATK_Idle = false;
-    public bool isGuard = false;
+    private bool isIdle = false;
+    private bool isJump = false;
+    private bool isDead = false;
+    private bool isDamaged = false;
+    private bool isATK = false;
+    private bool isATK_Idle = false;
+    private bool isGuard = false;
     private Animator playerAnim;
 
     public enum PLAYERSTATE
@@ -41,6 +44,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        cameraTransform = transform.GetChild(0);
         playerAnim = gameObject.GetComponentInChildren<Animator>();
         playerState = PLAYERSTATE.IDLE;
     }
@@ -48,13 +52,39 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
-        moveDirection = new Vector3(x, 0, z);
+        if(isDead)
+        {
+            return;
+        }
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
 
-        characterController.Move(moveDirection * moveSpeed * Time.deltaTime);
+        Vector3 moveDirection = new Vector3(h, 0, v);
 
-        switch(playerState)
+        
+        moveDirection *= moveSpeed;
+
+        if (characterController.isGrounded)
+        {
+            yVelocity = 0;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("jump");
+                yVelocity = jumpSpeed;
+                playerState = PLAYERSTATE.JUMP;
+            }
+        }
+        yVelocity += (gravity * Time.deltaTime);
+        moveDirection.y = yVelocity;
+
+        characterController.Move(moveDirection * Time.deltaTime);
+
+        if (transform.position.y < -2f)
+        {
+            transform.position = new Vector3(0, 20, 0);
+        }
+
+        switch (playerState)
         {
             case PLAYERSTATE.IDLE:
                 isGuard = false;
@@ -153,50 +183,34 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
-        moveDirection.y -= gravity * Time.deltaTime;
+        
         playerAnim.SetInteger("PLAYERSTATE", (int)playerState);
     }
 
     public void InputChecker()
     {
-        if(isGuard == false)
+        if (Input.GetKey(KeyCode.W))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                playerState = PLAYERSTATE.JUMP;
+            RunState();
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            playerState = PLAYERSTATE.RUNBACK;
 
-            }
-            if (Input.GetKey(KeyCode.W))
-            {
-                RunState();
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                playerState = PLAYERSTATE.RUNBACK;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            playerState = PLAYERSTATE.MOVER;
 
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                playerState = PLAYERSTATE.MOVER;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            playerState = PLAYERSTATE.MOVEL;
 
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                playerState = PLAYERSTATE.MOVEL;
-
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                playerState = PLAYERSTATE.ATTACK_IDLE;
-            }
-            if(characterController.isGrounded)
-            {
-                if (Input.GetButton("jump"))
-                {
-                    moveDirection.y = jumpSpeedF;
-                }
-                playerState = PLAYERSTATE.JUMP;
-            }
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            playerState = PLAYERSTATE.ATTACK_IDLE;
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
