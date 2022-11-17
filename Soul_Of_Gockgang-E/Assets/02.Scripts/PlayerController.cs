@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public float yVelocity = 0;
 
     private CharacterController characterController;
+    public Weapon_System weapon_System;
     public GameObject player;
     private bool isIdle = false;
     private bool isJump = false;
@@ -89,6 +90,7 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.IDLE:
                 isGuard = false;
                 isATK_Idle = false;
+                weapon_System.isAttack = false;
                 player.transform.rotation = Quaternion.identity;
                 InputChecker();
                 break;
@@ -141,6 +143,7 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.ATTACK_IDLE:
                 isATK_Idle = true;
                 isIdle = false;
+                weapon_System.isAttack = false;
                 isGuard = false;
                 if(Input.GetKey(KeyCode.Mouse0))
                 {
@@ -165,7 +168,8 @@ public class PlayerController : MonoBehaviour
 
             case PLAYERSTATE.BLOCK:
                 isIdle = false;
-                if(Input.GetKeyUp(KeyCode.Mouse1))
+                weapon_System.isAttack = false;
+                if (Input.GetKeyUp(KeyCode.Mouse1))
                 {
                     playerState = PLAYERSTATE.ATTACK_IDLE;
                 }
@@ -242,6 +246,7 @@ public class PlayerController : MonoBehaviour
     }
     public void Attacking()
     {
+        weapon_System.isAttack = true;
         playerAnim.SetTrigger("SLASH_COMBO");
     }
 }

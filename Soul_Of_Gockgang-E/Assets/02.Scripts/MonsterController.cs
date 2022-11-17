@@ -5,187 +5,115 @@ using UnityEngine.AI;
 
 public class MonsterController : MonoBehaviour
 {
-    public enum State
+    public enum ENEMYSTATE
     {
-        IDLE,
-        TRACE,
+        IDLE = 0,
+        MOVE,
         ATTACK,
-        DIE
+        DAMAGE,
+        DEAD
     }
-    public State state = State.IDLE;
-    public float traceDist = 10;
-    public float attacDist = 2;
 
-    public bool isDie = false;
+    public ENEMYSTATE enemyState;
+    public float stateTime;
+    public float idleStateTime;
+    public Animator enemyAnim;
+    public Transform target;
 
-    private Transform monsterTr;
-    private Transform playerTr;
-    private NavMeshAgent agent;
-    private Animator anim;
+    public float speed = 0.5f;
+    public float rotationSpeed = 10f;
+    public float attackRange = 2.5f;
+    public float attackStateMaxTime;
 
-    private readonly int hashTrace = Animator.StringToHash("isTrace");
-    private readonly int hashAttack = Animator.StringToHash("isAttack");
-    private readonly int hashHit = Animator.StringToHash("isHit");
-    private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
-    private readonly int hashSpeed = Animator.StringToHash("Speed");
-    private readonly int hashDie = Animator.StringToHash("Die");
+    public CharacterController enemyCharacterController;
 
-    public GameObject bloodEffect;
-    private int hp = 100;
-
-    private void OnEnable()
+    public int hp = 5;
+    public PlayerController playerState;
+    // Start is called before the first frame update
+    void Start()
     {
-        state = State.IDLE;
-        StartCoroutine(CheckMonsterState());
-        StartCoroutine(MonsterAction());
+        enemyState = ENEMYSTATE.IDLE;
+        target = GameObject.FindGameObjectWithTag("Player").transform;
+        enemyCharacterController = GetComponent<CharacterController>();
+        enemyAnim = GetComponentInChildren<Animator>();
+        playerState = target.GetComponent<PlayerController>();
     }
-    private void OnDisable()
+
+    // Update is called once per frame
+    void Update()
     {
-
-    }
-    void Awake()
-    {
-        monsterTr = GetComponent<Transform>();
-        playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
-
-        agent = GetComponent<NavMeshAgent>();
-
-        //agent.destination = playerTr.position;
-        anim = GetComponent<Animator>();
-
-        bloodEffect = Resources.Load<GameObject>("Prefabs/BloodSprayEffect");
-
-    }
-    private void Update()
-    {
-        if (agent.remainingDistance >= 2f)
+        switch (enemyState)
         {
-            Vector3 direction = agent.desiredVelocity;
-            Quaternion rot = Quaternion.LookRotation(direction);
-
-            monsterTr.rotation = Quaternion.Slerp(monsterTr.rotation, rot, Time.deltaTime * 10f);
+            case ENEMYSTATE.IDLE:
+                stateTime += Time.deltaTime;
+                if (stateTime > idleStateTime)
+                {
+                    stateTime = 0;
+                    enemyState = ENEMYSTATE.MOVE;
+                }
+                break;
+            case ENEMYSTATE.MOVE:
+                float distance = Vector3.Distance(target.position, transform.position);
+                if (distance < attackRange)
+                {
+                    enemyState = ENEMYSTATE.ATTACK;
+                    stateTime = 0;
+                }
+                else
+                {
+                    Vector3 dir = target.position - transform.position;
+                    dir.y = 0;
+                    dir.Normalize();
+                    enemyCharacterController.SimpleMove(dir * speed);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), rotationSpeed * Time.deltaTime);
+                }
+                break;
+            case ENEMYSTATE.ATTACK:
+                stateTime += Time.deltaTime;
+                if (stateTime > attackStateMaxTime)
+                {
+                    Debug.Log("Attack");
+                    //playerState.DamageByEnemy();
+                    stateTime = 0;
+                }
+                float dist = Vector3.Distance(target.position, transform.position);
+                if (dist > attackRange)
+                {
+                    enemyState = ENEMYSTATE.MOVE;
+                    stateTime = 0;
+                }
+                break;
+            case ENEMYSTATE.DAMAGE:
+                stateTime += Time.deltaTime;
+                if (stateTime > 1f)
+                {
+                    stateTime = 0;
+                    enemyState = ENEMYSTATE.MOVE;
+                }
+                if (hp <= 0)
+                {
+                    enemyState = ENEMYSTATE.DEAD;
+                }
+                break;
+            case ENEMYSTATE.DEAD:
+                enemyCharacterController.enabled = false;
+                Destroy(gameObject, 3f);
+                break;
+            default:
+                break;
         }
-    }
-    IEnumerator CheckMonsterState()
-    {
-        while (!isDie)
-        {
-            yield return new WaitForSeconds(0.3f);
-            float distance = Vector3.Distance(playerTr.position, monsterTr.position);
 
-            if (state == State.DIE) yield break;
-
-            if (distance <= attacDist)
-            {
-                state = State.ATTACK;
-            }
-            else if (distance <= traceDist)
-            {
-                state = State.TRACE;
-            }
-            else
-            {
-                state = State.IDLE;
-            }
-        }
+        enemyAnim.SetInteger("EnemyState", (int)enemyState);
     }
 
-    IEnumerator MonsterAction()
-    {
-        while (!isDie)
-        {
-            switch (state)
-            {
-                case State.IDLE:
-                    agent.isStopped = true;
-                    anim.SetBool(hashTrace, false);
-                    break;
-                case State.TRACE:
-                    agent.SetDestination(playerTr.position);
-                    agent.isStopped = false;
-                    anim.SetBool(hashTrace, true);
-                    anim.SetBool(hashAttack, false);
-                    break;
-                case State.ATTACK:
-                    anim.SetBool(hashAttack, true);
-                    break;
-                case State.DIE:
-                    isDie = true;
-                    agent.isStopped = true;
-                    anim.SetTrigger(hashDie);
-                    GetComponent<CapsuleCollider>().enabled = false;
-                    break;
-                default:
-                    break;
-            }
-            yield return new WaitForSeconds(0.3f);
-        }
-    }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag("Bullet"))
+        Debug.Log(collision.gameObject.name);
+        Debug.Log(collision.gameObject.tag);
+        if (collision.gameObject.tag == "Sword")
         {
-            Destroy(collision.gameObject);
-            //anim.SetTrigger(hashHit);
-
-            //Vector3 pos = collision.GetContact(0).point;
-            //Quaternion rot = Quaternion.LookRotation(-collision.GetContact(0).normal);
-            //ShowBloodEffect(pos, rot);
-
-            //hp -= 10;
-            //if(hp <=0)
-            //{
-            //    state = State.DIE;
-            //    GameManager.instance.DisplayScore(50);
-            //}
-        }
-    }
-    void ShowBloodEffect(Vector3 pos, Quaternion rot)
-    {
-        GameObject blood = Instantiate<GameObject>(bloodEffect, pos, rot, monsterTr);
-        Destroy(blood, 1.0f);
-    }
-    void InitMonster()
-    {
-        hp = 100;
-        isDie = false;
-        GetComponent<CapsuleCollider>().enabled = true;
-        this.gameObject.SetActive(false);
-    }
-    private void OnDrawGizmos()
-    {
-        if (state == State.TRACE)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, traceDist);
-        }
-        if (state == State.ATTACK)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, attacDist);
-        }
-    }
-
-    void OnPlayerDie()
-    {
-        StopAllCoroutines();
-
-        agent.isStopped = true;
-        anim.SetFloat(hashSpeed, Random.Range(0.8f, 1.2f));
-        anim.SetTrigger(hashPlayerDie);
-
-    }
-    public void OnDamage(Vector3 pos, Vector3 normal)
-    {
-        anim.SetTrigger(hashHit);
-        Quaternion rot = Quaternion.LookRotation(normal);
-
-        ShowBloodEffect(pos, rot);
-
-        hp -= 10;
-        if (hp <= 0)
-        {
-            state = State.DIE;
+            --hp;
+            enemyState = ENEMYSTATE.DAMAGE;
         }
     }
 }

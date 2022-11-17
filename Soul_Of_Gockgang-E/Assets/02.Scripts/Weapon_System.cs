@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Weapon_System : MonoBehaviour
 {
-    
+    public bool isAttack = false;
+    public GameObject sandBagHitVfx;
+    public GameObject bloodVfx;
     public string dataPath;
     public List<Dictionary<string, object>> data;
     public enum WEAPONTYPE
@@ -22,6 +24,7 @@ public class Weapon_System : MonoBehaviour
     }
     void Start()
     {
+        isAttack = false;
         LoadWeaponData();
     }
 
@@ -29,5 +32,29 @@ public class Weapon_System : MonoBehaviour
     void Update()
     {
         
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(isAttack)
+        {
+            if (other.CompareTag("SandBag"))
+            {
+                SandBagVFX();
+            }
+            if(other.CompareTag("Enemy"))
+            {
+                BloodVFX();
+            }
+        }
+    }
+    void SandBagVFX()
+    {
+        GameObject hitvfx = Instantiate<GameObject>(sandBagHitVfx, transform.position, transform.rotation);
+        Destroy(hitvfx, 1.0f);
+    }
+    void BloodVFX()
+    {
+        GameObject blood = Instantiate<GameObject>(bloodVfx, transform.position, transform.rotation);
+        Destroy(blood, 1.0f);
     }
 }
