@@ -72,7 +72,6 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("jump");
                 yVelocity = jumpSpeed;
-                playerState = PLAYERSTATE.JUMP;
             }
         }
         yVelocity += (gravity * Time.deltaTime);
@@ -179,6 +178,7 @@ public class PlayerController : MonoBehaviour
                 {
                     IdleState();
                 }
+                InputChecker();
                 break;
             case PLAYERSTATE.DEAD:
                 isIdle = false;
@@ -212,6 +212,10 @@ public class PlayerController : MonoBehaviour
             playerState = PLAYERSTATE.MOVEL;
 
         }
+        //if(Input.GetKey(KeyCode.Space))
+        //{
+        //    playerState = PLAYERSTATE.JUMP;
+        //}
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             playerState = PLAYERSTATE.ATTACK_IDLE;
