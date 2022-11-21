@@ -106,14 +106,22 @@ public class MonsterController : MonoBehaviour
         enemyAnim.SetInteger("EnemyState", (int)enemyState);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(collision.gameObject.name);
-        Debug.Log(collision.gameObject.tag);
-        if (collision.gameObject.tag == "Sword")
+        if (other.gameObject.tag == "Weapon")
         {
             --hp;
             enemyState = ENEMYSTATE.DAMAGE;
         }
     }
+    //private void OnCollisionEnter(Collision collision)
+    //{ 
+    //    Debug.Log(collision.gameObject.name);
+    //    Debug.Log(collision.gameObject.tag);
+    //    if (collision.gameObject.tag == "Weapon")
+    //    {
+    //        --hp;
+    //        enemyState = ENEMYSTATE.DAMAGE;
+    //    }
+    //}
 }
