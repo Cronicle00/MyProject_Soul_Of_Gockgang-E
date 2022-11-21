@@ -29,9 +29,12 @@ public class MonsterController : MonoBehaviour
 
     public int hp = 5;
     public PlayerController playerState;
+
+    private bool isAttack;
     // Start is called before the first frame update
     void Start()
     {
+        isAttack = false;
         enemyState = ENEMYSTATE.IDLE;
         target = GameObject.FindGameObjectWithTag("Player").transform;
         enemyCharacterController = GetComponent<CharacterController>();
@@ -45,6 +48,7 @@ public class MonsterController : MonoBehaviour
         switch (enemyState)
         {
             case ENEMYSTATE.IDLE:
+                isAttack = false;
                 stateTime += Time.deltaTime;
                 if (stateTime > idleStateTime)
                 {
@@ -53,6 +57,7 @@ public class MonsterController : MonoBehaviour
                 }
                 break;
             case ENEMYSTATE.MOVE:
+                isAttack = false;
                 float distance = Vector3.Distance(target.position, transform.position);
                 if (distance < attackRange)
                 {
@@ -69,11 +74,12 @@ public class MonsterController : MonoBehaviour
                 }
                 break;
             case ENEMYSTATE.ATTACK:
+                isAttack = true;
                 stateTime += Time.deltaTime;
                 if (stateTime > attackStateMaxTime)
                 {
                     Debug.Log("Attack");
-                    //playerState.DamageByEnemy();
+                    playerState.DamageByEnemy();
                     stateTime = 0;
                 }
                 float dist = Vector3.Distance(target.position, transform.position);
@@ -84,6 +90,7 @@ public class MonsterController : MonoBehaviour
                 }
                 break;
             case ENEMYSTATE.DAMAGE:
+                isAttack = false;
                 stateTime += Time.deltaTime;
                 if (stateTime > 1f)
                 {
@@ -96,6 +103,7 @@ public class MonsterController : MonoBehaviour
                 }
                 break;
             case ENEMYSTATE.DEAD:
+                isAttack = false;
                 enemyCharacterController.enabled = false;
                 Destroy(gameObject, 3f);
                 break;
@@ -108,10 +116,13 @@ public class MonsterController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Weapon")
+        if(isAttack)
         {
-            --hp;
-            enemyState = ENEMYSTATE.DAMAGE;
+            if (other.gameObject.tag == "Weapon")
+            {
+                --hp;
+                enemyState = ENEMYSTATE.DAMAGE;
+            }
         }
     }
     //private void OnCollisionEnter(Collision collision)

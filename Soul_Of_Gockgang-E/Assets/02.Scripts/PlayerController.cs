@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed = 10f;
     public float gravity = -20f;
     public float yVelocity = 0;
+    public float stateTime;
 
     private CharacterController characterController;
     public Weapon_System weapon_System;
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private bool isGuard = false;
     private Animator playerAnim;
 
+    public int hp = 10;
     public enum PLAYERSTATE
     {
         IDLE =0,
@@ -37,6 +39,7 @@ public class PlayerController : MonoBehaviour
         TURNSLASH,
         BLOCK,
         RUNWITHSWORD = 10,
+        DAMAGED,
         DEAD
     }
     public PLAYERSTATE playerState;
@@ -180,6 +183,19 @@ public class PlayerController : MonoBehaviour
                 }
                 InputChecker();
                 break;
+            case PLAYERSTATE.DAMAGED:
+                isDamaged = true;
+                stateTime += Time.deltaTime;
+                if (stateTime > 1f)
+                {
+                    stateTime = 0;
+                    IdleState();
+                }
+                if (hp <= 0)
+                {
+                    playerState = PLAYERSTATE.DEAD;
+                }
+                break;
             case PLAYERSTATE.DEAD:
                 isIdle = false;
                 break;
@@ -193,37 +209,40 @@ public class PlayerController : MonoBehaviour
 
     public void InputChecker()
     {
-        if (Input.GetKey(KeyCode.W))
+        if(!isDamaged)
         {
-            RunState();
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            playerState = PLAYERSTATE.RUNBACK;
+            if (Input.GetKey(KeyCode.W))
+            {
+                RunState();
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                playerState = PLAYERSTATE.RUNBACK;
 
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            playerState = PLAYERSTATE.MOVER;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                playerState = PLAYERSTATE.MOVER;
 
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            playerState = PLAYERSTATE.MOVEL;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                playerState = PLAYERSTATE.MOVEL;
 
-        }
-        //if(Input.GetKey(KeyCode.Space))
-        //{
-        //    playerState = PLAYERSTATE.JUMP;
-        //}
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            playerState = PLAYERSTATE.ATTACK_IDLE;
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            playerState = PLAYERSTATE.BLOCK;
-            isGuard = true;
+            }
+            //if(Input.GetKey(KeyCode.Space))
+            //{
+            //    playerState = PLAYERSTATE.JUMP;
+            //}
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                playerState = PLAYERSTATE.ATTACK_IDLE;
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                playerState = PLAYERSTATE.BLOCK;
+                isGuard = true;
+            }
         }
     }
     private void IdleState()
@@ -252,5 +271,10 @@ public class PlayerController : MonoBehaviour
     {
         weapon_System.isAttack = true;
         playerAnim.SetTrigger("SLASH_COMBO");
+    }
+    public void DamageByEnemy()
+    {
+        hp--;
+        playerState = PLAYERSTATE.DAMAGED;
     }
 }

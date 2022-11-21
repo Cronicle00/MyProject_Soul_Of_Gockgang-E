@@ -240,6 +240,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &408038199 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100078, guid: 5a35c5f0a89b9654d897ccd7c8f81bd0, type: 3}
+  m_PrefabInstance: {fileID: 1606817820}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &417407106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1288,6 +1293,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400078, guid: 5a35c5f0a89b9654d897ccd7c8f81bd0, type: 3}
   m_PrefabInstance: {fileID: 1606817820}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &1606817823
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408038199}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.05, y: 0.1, z: 0.05}
+  m_Center: {x: 0, y: 0.1, z: 0.05}
 --- !u!1 &1610833203
 GameObject:
   m_ObjectHideFlags: 0
@@ -1412,10 +1430,10 @@ MonoBehaviour:
   target: {fileID: 0}
   speed: 5
   rotationSpeed: 10
-  attackRange: 2.5
+  attackRange: 2
   attackStateMaxTime: 0
   enemyCharacterController: {fileID: 0}
-  hp: 5
+  hp: 10
   playerState: {fileID: 0}
 --- !u!54 &1610833210
 Rigidbody:
