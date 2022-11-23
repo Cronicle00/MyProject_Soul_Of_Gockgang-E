@@ -147,6 +147,7 @@ public class PlayerController : MonoBehaviour
                 isIdle = false;
                 weapon_System.isAttack = false;
                 isGuard = false;
+                isDamaged = false;
                 if(Input.GetKey(KeyCode.Mouse0))
                 {
                     Attacking();
@@ -166,10 +167,12 @@ public class PlayerController : MonoBehaviour
 
             case PLAYERSTATE.TURNSLASH:
                 isIdle = false;
+                isGuard = false;
                 break;
 
             case PLAYERSTATE.BLOCK:
                 isIdle = false;
+                isGuard = true;
                 weapon_System.isAttack = false;
                 if (Input.GetKeyUp(KeyCode.Mouse1))
                 {
@@ -185,6 +188,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case PLAYERSTATE.DAMAGED:
                 isDamaged = true;
+                isATK_Idle = true;
                 stateTime += Time.deltaTime;
                 if (stateTime > 1f)
                 {
@@ -274,7 +278,14 @@ public class PlayerController : MonoBehaviour
     }
     public void DamageByEnemy()
     {
-        hp--;
-        playerState = PLAYERSTATE.DAMAGED;
+        if(!isGuard)
+        {
+            hp--;
+            playerState = PLAYERSTATE.DAMAGED;
+        }
+        else
+        {
+            playerState = PLAYERSTATE.BLOCK;
+        }
     }
 }

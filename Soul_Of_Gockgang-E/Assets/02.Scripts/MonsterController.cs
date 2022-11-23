@@ -79,7 +79,7 @@ public class MonsterController : MonoBehaviour
                 if (stateTime > attackStateMaxTime)
                 {
                     Debug.Log("Attack");
-                    playerState.DamageByEnemy();
+                    //playerState.DamageByEnemy();
                     stateTime = 0;
                 }
                 float dist = Vector3.Distance(target.position, transform.position);
@@ -124,6 +124,11 @@ public class MonsterController : MonoBehaviour
                 enemyState = ENEMYSTATE.DAMAGE;
             }
         }
+    }
+
+    public void PlayerDamageByEnemy()
+    {
+        playerState.DamageByEnemy();
     }
     //private void OnCollisionEnter(Collision collision)
     //{ 
