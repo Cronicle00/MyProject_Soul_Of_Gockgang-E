@@ -24,6 +24,9 @@ public class PlayerController : MonoBehaviour
     private bool isATK_Idle = false;
     private bool isGuard = false;
     private Animator playerAnim;
+    public SheildController sheildController;
+    public GameObject sheildHitVFX;
+    public GameObject sheildPos;
 
     public int hp = 10;
     public enum PLAYERSTATE
@@ -92,6 +95,8 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.IDLE:
                 isGuard = false;
                 isATK_Idle = false;
+                moveSpeed = 5f;
+                jumpSpeed = 10f;
                 weapon_System.isAttack = false;
                 player.transform.rotation = Quaternion.identity;
                 InputChecker();
@@ -145,6 +150,8 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.ATTACK_IDLE:
                 isATK_Idle = true;
                 isIdle = false;
+                moveSpeed = 5f;
+                jumpSpeed = 10f;
                 weapon_System.isAttack = false;
                 isGuard = false;
                 isDamaged = false;
@@ -162,6 +169,8 @@ public class PlayerController : MonoBehaviour
 
             case PLAYERSTATE.ATTACK:
                 isIdle = false;
+                moveSpeed = 0;
+                jumpSpeed = 0;
                 playerState = PLAYERSTATE.ATTACK_IDLE;
                 break;
 
@@ -173,6 +182,8 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.BLOCK:
                 isIdle = false;
                 isGuard = true;
+                moveSpeed = 0;
+                jumpSpeed = 0;
                 weapon_System.isAttack = false;
                 if (Input.GetKeyUp(KeyCode.Mouse1))
                 {
@@ -189,6 +200,8 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.DAMAGED:
                 isDamaged = true;
                 isATK_Idle = true;
+                moveSpeed = 0;
+                jumpSpeed = 0;
                 stateTime += Time.deltaTime;
                 if (stateTime > 1f)
                 {
@@ -202,6 +215,8 @@ public class PlayerController : MonoBehaviour
                 break;
             case PLAYERSTATE.DEAD:
                 isIdle = false;
+                moveSpeed = 0;
+                jumpSpeed = 0;
                 break;
 
             default:
@@ -213,7 +228,7 @@ public class PlayerController : MonoBehaviour
 
     public void InputChecker()
     {
-        if(!isDamaged)
+        if(!isDamaged || !isGuard)
         {
             if (Input.GetKey(KeyCode.W))
             {
@@ -285,6 +300,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            GameObject hitvfx = Instantiate<GameObject>(sheildHitVFX, sheildPos.transform.position, sheildPos.transform.rotation);
+            Destroy(hitvfx, 1.0f);
             playerState = PLAYERSTATE.BLOCK;
         }
     }
