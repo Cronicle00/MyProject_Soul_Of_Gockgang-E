@@ -288,6 +288,8 @@ public class PlayerController : MonoBehaviour
     }
     public void Attacking()
     {
+        moveSpeed = 0;
+        jumpSpeed = 0;
         weapon_System.isAttack = true;
         playerAnim.SetTrigger("SLASH_COMBO");
     }

@@ -9,4 +9,8 @@ public class MonsterAnimEvent : MonoBehaviour
     {
         monsterController.PlayerDamageByEnemy();
     }
+    public void MoveSpeedChanger()
+    {
+        monsterController.speed = 5;
+    }
 }

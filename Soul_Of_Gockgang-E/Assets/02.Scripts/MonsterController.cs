@@ -31,6 +31,7 @@ public class MonsterController : MonoBehaviour
     public PlayerController playerState;
 
     private bool isAttack;
+    public float distance;
     // Start is called before the first frame update
     void Start()
     {
@@ -49,6 +50,7 @@ public class MonsterController : MonoBehaviour
         {
             case ENEMYSTATE.IDLE:
                 isAttack = false;
+                speed = 5;
                 stateTime += Time.deltaTime;
                 if (stateTime > idleStateTime)
                 {
@@ -58,7 +60,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case ENEMYSTATE.MOVE:
                 isAttack = false;
-                float distance = Vector3.Distance(target.position, transform.position);
+                distance = Vector3.Distance(target.position, transform.position);
                 if (distance < attackRange)
                 {
                     enemyState = ENEMYSTATE.ATTACK;
@@ -75,10 +77,11 @@ public class MonsterController : MonoBehaviour
                 break;
             case ENEMYSTATE.ATTACK:
                 isAttack = true;
+                speed = 0;
                 stateTime += Time.deltaTime;
                 if (stateTime > attackStateMaxTime)
                 {
-                    Debug.Log("Attack");
+                   // Debug.Log("Attack");
                     //playerState.DamageByEnemy();
                     stateTime = 0;
                 }
@@ -91,6 +94,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case ENEMYSTATE.DAMAGE:
                 isAttack = false;
+                speed = 0;
                 stateTime += Time.deltaTime;
                 if (stateTime > 1f)
                 {
@@ -104,6 +108,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case ENEMYSTATE.DEAD:
                 isAttack = false;
+                speed = 0;
                 enemyCharacterController.enabled = false;
                 Destroy(gameObject, 3f);
                 break;
@@ -128,7 +133,10 @@ public class MonsterController : MonoBehaviour
 
     public void PlayerDamageByEnemy()
     {
-        playerState.DamageByEnemy();
+        if(distance < attackRange)
+        {
+            playerState.DamageByEnemy();
+        }
     }
     //private void OnCollisionEnter(Collision collision)
     //{ 
