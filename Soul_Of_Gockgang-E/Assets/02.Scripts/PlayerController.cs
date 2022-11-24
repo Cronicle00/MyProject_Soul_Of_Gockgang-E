@@ -5,8 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public Transform cameraTransform;
+    public GameObject tPSCam;
 
     public float moveSpeed = 5.0f;
+    public float rotateSpeed = 10.0f;
     private Vector3 moveDirection = Vector3.zero;
     public float jumpSpeed = 10f;
     public float gravity = -20f;
@@ -23,12 +25,18 @@ public class PlayerController : MonoBehaviour
     private bool isATK = false;
     private bool isATK_Idle = false;
     private bool isGuard = false;
+    private bool ableGuard = true;
     private Animator playerAnim;
     public SheildController sheildController;
     public GameObject sheildHitVFX;
     public GameObject sheildPos;
 
-    public int hp = 10;
+    public float hp = 10;
+    private float maxHp =0;
+    public float stamina = 10;
+    private float maxStamina = 0;
+    public float mental = 10;
+    public int gold = 0;
     public enum PLAYERSTATE
     {
         IDLE =0,
@@ -54,6 +62,8 @@ public class PlayerController : MonoBehaviour
         cameraTransform = transform.GetChild(0);
         playerAnim = gameObject.GetComponentInChildren<Animator>();
         playerState = PLAYERSTATE.IDLE;
+        maxHp = hp;
+        maxStamina = stamina;
     }
 
     // Update is called once per frame
@@ -68,7 +78,14 @@ public class PlayerController : MonoBehaviour
 
         Vector3 moveDirection = new Vector3(h, 0, v);
 
-        
+        if (!(h == 0 && v == 0) && !isGuard)
+        {
+            // 이동과 회전을 함께 처리
+            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            // 회전하는 부분. Point 1.
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * rotateSpeed);
+        }
+
         moveDirection *= moveSpeed;
 
         if (characterController.isGrounded)
@@ -76,7 +93,7 @@ public class PlayerController : MonoBehaviour
             yVelocity = 0;
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("jump");
+                //Debug.Log("jump");
                 yVelocity = jumpSpeed;
             }
         }
@@ -90,6 +107,8 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(0, 20, 0);
         }
 
+        RefillStamina();
+
         switch (playerState)
         {
             case PLAYERSTATE.IDLE:
@@ -98,48 +117,49 @@ public class PlayerController : MonoBehaviour
                 moveSpeed = 5f;
                 jumpSpeed = 10f;
                 weapon_System.isAttack = false;
-                player.transform.rotation = Quaternion.identity;
+                //player.transform.rotation = Quaternion.identity;
                 InputChecker();
                 break;
 
             #region KEYUP
             case PLAYERSTATE.RUN:
-                if(Input.GetKeyUp(KeyCode.W))
+                weapon_System.isAttack = false;
+                if (Input.GetKeyUp(KeyCode.W)|| Input.GetKeyUp(KeyCode.A)|| Input.GetKeyUp(KeyCode.S)|| Input.GetKeyUp(KeyCode.D))
                 {
                     IdleState();
                 }
                 break;
             case PLAYERSTATE.RUNBACK:
-                if (Input.GetKeyUp(KeyCode.S))
-                {
-                    IdleState();
-                }
+                //if (Input.GetKeyUp(KeyCode.S))
+                //{
+                //    IdleState();
+                //}
                 break;
             case PLAYERSTATE.MOVER:
-                if(Input.GetKeyUp(KeyCode.D))
-                {
-                    if (Input.GetKey(KeyCode.A))
-                    {
-                        playerState = PLAYERSTATE.MOVEL;
-                    }
-                    else
-                    {
-                        IdleState();
-                    }
-                }
+                //if(Input.GetKeyUp(KeyCode.D))
+                //{
+                //    if (Input.GetKey(KeyCode.A))
+                //    {
+                //        playerState = PLAYERSTATE.MOVEL;
+                //    }
+                //    else
+                //    {
+                //        IdleState();
+                //    }
+                //}
                 break;
             case PLAYERSTATE.MOVEL:
-                if(Input.GetKeyUp(KeyCode.A))
-                {
-                    if (Input.GetKey(KeyCode.D))
-                    {
-                        playerState = PLAYERSTATE.MOVER;
-                    }
-                    else
-                    {
-                        IdleState();
-                    }
-                }
+                //if(Input.GetKeyUp(KeyCode.A))
+                //{
+                //    if (Input.GetKey(KeyCode.D))
+                //    {
+                //        playerState = PLAYERSTATE.MOVER;
+                //    }
+                //    else
+                //    {
+                //        IdleState();
+                //    }
+                //}
                 break;
             #endregion
 
@@ -185,13 +205,15 @@ public class PlayerController : MonoBehaviour
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 weapon_System.isAttack = false;
-                if (Input.GetKeyUp(KeyCode.Mouse1))
+                if (Input.GetKeyUp(KeyCode.Mouse1)||stamina<=0)
                 {
+                    ableGuard = false;
                     playerState = PLAYERSTATE.ATTACK_IDLE;
                 }
                 break;
             case PLAYERSTATE.RUNWITHSWORD:
-                if (Input.GetKeyUp(KeyCode.W))
+                weapon_System.isAttack = false;
+                if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
                 {
                     IdleState();
                 }
@@ -200,6 +222,7 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.DAMAGED:
                 isDamaged = true;
                 isATK_Idle = true;
+                weapon_System.isAttack = false;
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 stateTime += Time.deltaTime;
@@ -215,6 +238,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case PLAYERSTATE.DEAD:
                 isIdle = false;
+                weapon_System.isAttack = false;
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 break;
@@ -224,31 +248,32 @@ public class PlayerController : MonoBehaviour
         }
         
         playerAnim.SetInteger("PLAYERSTATE", (int)playerState);
+        playerAnim.SetBool("ableGuard", ableGuard);
     }
 
     public void InputChecker()
     {
         if(!isDamaged || !isGuard)
         {
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
             {
                 RunState();
             }
-            if (Input.GetKey(KeyCode.S))
-            {
-                playerState = PLAYERSTATE.RUNBACK;
+            //if (Input.GetKey(KeyCode.S))
+            //{
+            //    playerState = PLAYERSTATE.RUNBACK;
 
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                playerState = PLAYERSTATE.MOVER;
+            //}
+            //if (Input.GetKey(KeyCode.D))
+            //{
+            //    playerState = PLAYERSTATE.MOVER;
 
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                playerState = PLAYERSTATE.MOVEL;
+            //}
+            //if (Input.GetKey(KeyCode.A))
+            //{
+            //    playerState = PLAYERSTATE.MOVEL;
 
-            }
+            //}
             //if(Input.GetKey(KeyCode.Space))
             //{
             //    playerState = PLAYERSTATE.JUMP;
@@ -257,10 +282,12 @@ public class PlayerController : MonoBehaviour
             {
                 playerState = PLAYERSTATE.ATTACK_IDLE;
             }
-            if (Input.GetKeyDown(KeyCode.Mouse1))
+            if(stamina > 0)
             {
-                playerState = PLAYERSTATE.BLOCK;
-                isGuard = true;
+                if (Input.GetKeyDown(KeyCode.Mouse1))
+                {
+                    playerState = PLAYERSTATE.BLOCK;
+                }
             }
         }
     }
@@ -300,11 +327,28 @@ public class PlayerController : MonoBehaviour
             hp--;
             playerState = PLAYERSTATE.DAMAGED;
         }
-        else
+        else if(stamina > 0)
         {
+            stamina--;
             GameObject hitvfx = Instantiate<GameObject>(sheildHitVFX, sheildPos.transform.position, sheildPos.transform.rotation);
             Destroy(hitvfx, 1.0f);
-            playerState = PLAYERSTATE.BLOCK;
+            //playerState = PLAYERSTATE.BLOCK;
         }
+        else
+        {
+            isGuard = false;
+            ableGuard = false;
+            IdleState();
+        }
+    }
+    private void RefillStamina()
+    {
+        if(stamina < maxStamina)
+        Debug.Log("refill");
+        while (stamina == maxStamina)
+        {
+            stamina += 0.1f;
+        }
+        ableGuard = true;
     }
 }
