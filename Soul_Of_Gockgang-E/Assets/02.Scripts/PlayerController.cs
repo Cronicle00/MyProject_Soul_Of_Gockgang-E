@@ -37,6 +37,9 @@ public class PlayerController : MonoBehaviour
     private float maxStamina = 0;
     public float mental = 10;
     public int gold = 0;
+
+    private float stamina_timer;
+    private bool timerActive;
     public enum PLAYERSTATE
     {
         IDLE =0,
@@ -64,6 +67,7 @@ public class PlayerController : MonoBehaviour
         playerState = PLAYERSTATE.IDLE;
         maxHp = hp;
         maxStamina = stamina;
+        timerActive = false;
     }
 
     // Update is called once per frame
@@ -105,6 +109,11 @@ public class PlayerController : MonoBehaviour
         if (transform.position.y < -2f)
         {
             transform.position = new Vector3(0, 20, 0);
+        }
+
+        if(stamina >= 0.5f)
+        {
+            ableGuard = true;
         }
 
         RefillStamina();
@@ -329,7 +338,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(stamina > 0)
         {
-            stamina--;
+            stamina -= 0.5f;
             GameObject hitvfx = Instantiate<GameObject>(sheildHitVFX, sheildPos.transform.position, sheildPos.transform.rotation);
             Destroy(hitvfx, 1.0f);
             //playerState = PLAYERSTATE.BLOCK;
@@ -344,11 +353,30 @@ public class PlayerController : MonoBehaviour
     private void RefillStamina()
     {
         if(stamina < maxStamina)
-        Debug.Log("refill");
-        while (stamina == maxStamina)
         {
-            stamina += 0.1f;
+            StartCoroutine(CoStaminaTimer());
         }
-        ableGuard = true;
+    }
+
+    private IEnumerator CoStaminaTimer()
+    {
+        stamina_timer = 2f;
+        timerActive = true;
+        while(stamina_timer > 0&&timerActive)
+        {
+            stamina_timer -= Time.deltaTime;
+            yield return null;
+
+            if (stamina_timer<=0)
+            {
+                while(stamina == maxStamina)
+                {
+                    stamina += 0.1f*Time.deltaTime;
+                }
+
+                timerActive = false;
+            }
+        }
+        
     }
 }
