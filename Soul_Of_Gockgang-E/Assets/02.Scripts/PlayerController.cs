@@ -118,6 +118,7 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.IDLE:
                 isGuard = false;
                 isATK_Idle = false;
+                isATK = false;
                 moveSpeed = 5f;
                 jumpSpeed = 10f;
                 weapon_System.isAttack = false;
@@ -126,6 +127,7 @@ public class PlayerController : MonoBehaviour
 
             #region KEYUP
             case PLAYERSTATE.RUN:
+                isATK = false;
                 weapon_System.isAttack = false;
                 if (Input.GetKeyUp(KeyCode.W))
                 {
@@ -134,12 +136,15 @@ public class PlayerController : MonoBehaviour
                 InputChecker();
                 break;
             case PLAYERSTATE.RUNBACK:
+                isATK = false;
                 if (Input.GetKeyUp(KeyCode.S))
                 {
                     IdleState();
                 }
+                InputChecker();
                 break;
             case PLAYERSTATE.MOVER:
+                isATK = false;
                 if (Input.GetKeyUp(KeyCode.D))
                 {
                     if (Input.GetKey(KeyCode.A))
@@ -151,8 +156,10 @@ public class PlayerController : MonoBehaviour
                         IdleState();
                     }
                 }
+                InputChecker();
                 break;
             case PLAYERSTATE.MOVEL:
+                isATK = false;
                 if (Input.GetKeyUp(KeyCode.A))
                 {
                     if (Input.GetKey(KeyCode.D))
@@ -164,12 +171,14 @@ public class PlayerController : MonoBehaviour
                         IdleState();
                     }
                 }
+                InputChecker();
                 break;
             #endregion
 
             case PLAYERSTATE.JUMP:
                 IdleState();
                 isIdle = false;
+                isATK = false;
                 break;
             case PLAYERSTATE.ATTACK_IDLE:
                 isATK_Idle = true;
@@ -179,7 +188,8 @@ public class PlayerController : MonoBehaviour
                 weapon_System.isAttack = false;
                 isGuard = false;
                 isDamaged = false;
-                if(Input.GetKey(KeyCode.Mouse0))
+                isATK = false;
+                if (Input.GetKey(KeyCode.Mouse0))
                 {
                     Attacking();
                     playerState = PLAYERSTATE.ATTACK;
@@ -193,6 +203,7 @@ public class PlayerController : MonoBehaviour
 
             case PLAYERSTATE.ATTACK:
                 isIdle = false;
+                isATK = true;
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 playerState = PLAYERSTATE.ATTACK_IDLE;
@@ -201,6 +212,7 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.TURNSLASH:
                 isIdle = false;
                 isGuard = false;
+                isATK = true;
                 break;
 
             case PLAYERSTATE.BLOCK:
@@ -209,6 +221,7 @@ public class PlayerController : MonoBehaviour
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 weapon_System.isAttack = false;
+                isATK = false;
                 if (Input.GetKeyUp(KeyCode.Mouse1)||stamina<=0)
                 {
                     ableGuard = false;
@@ -217,6 +230,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case PLAYERSTATE.RUNWITHSWORD:
                 weapon_System.isAttack = false;
+                isATK = false;
                 if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
                 {
                     IdleState();
@@ -227,6 +241,7 @@ public class PlayerController : MonoBehaviour
                 isDamaged = true;
                 isATK_Idle = true;
                 weapon_System.isAttack = false;
+                isATK = false;
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 stateTime += Time.deltaTime;
@@ -243,6 +258,7 @@ public class PlayerController : MonoBehaviour
             case PLAYERSTATE.DEAD:
                 isIdle = false;
                 weapon_System.isAttack = false;
+                isATK = false;
                 moveSpeed = 0;
                 jumpSpeed = 0;
                 break;
@@ -258,7 +274,7 @@ public class PlayerController : MonoBehaviour
     public float smoothness = 10f;
     public void LateUpdate()
     {
-        if(!isGuard)
+        if(!isGuard||!isATK)
         {
             Vector3 playerRotate = Vector3.Scale(tPSCam.transform.forward, new Vector3(1, 0, 1));
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
@@ -266,7 +282,7 @@ public class PlayerController : MonoBehaviour
     }
     public void InputChecker()
     {
-        if(!isDamaged || !isGuard)
+        if(!isDamaged || !isGuard || !isATK)
         {
             if (Input.GetKey(KeyCode.W))
             {
@@ -328,6 +344,7 @@ public class PlayerController : MonoBehaviour
     }
     public void Attacking()
     {
+        isATK = true;
         moveSpeed = 0;
         jumpSpeed = 0;
         weapon_System.isAttack = true;

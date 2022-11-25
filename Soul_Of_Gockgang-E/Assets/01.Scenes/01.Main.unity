@@ -7353,6 +7353,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 963194225}
     - target: {fileID: 7977767544209071560, guid: 506345ff8afc28947999a7b85e600529, type: 3}
+      propertyPath: gravity
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7977767544209071560, guid: 506345ff8afc28947999a7b85e600529, type: 3}
       propertyPath: moveSpeed
       value: 10
       objectReference: {fileID: 0}
@@ -7399,6 +7403,10 @@ PrefabInstance:
     - target: {fileID: 7977767544209071562, guid: 506345ff8afc28947999a7b85e600529, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7977767544209071563, guid: 506345ff8afc28947999a7b85e600529, type: 3}
+      propertyPath: m_Center.y
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 7977767544209071565, guid: 506345ff8afc28947999a7b85e600529, type: 3}
       propertyPath: m_Name
