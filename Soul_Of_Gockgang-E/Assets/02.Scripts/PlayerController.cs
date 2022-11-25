@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour
     private bool isGuard = false;
     private bool ableGuard = true;
     private Animator playerAnim;
-    public SheildController sheildController;
     public GameObject sheildHitVFX;
     public GameObject sheildPos;
 
@@ -275,7 +274,7 @@ public class PlayerController : MonoBehaviour
     public float smoothness = 10f;
     public void LateUpdate()
     {
-        if(!isGuard||!isATK)
+        if(!isGuard||!isATK || !isDead)
         {
             Vector3 playerRotate = Vector3.Scale(tPSCam.transform.forward, new Vector3(1, 0, 1));
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
