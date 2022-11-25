@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Transform cameraTransform;
     public GameObject tPSCam;
 
     public float moveSpeed = 5.0f;
@@ -17,7 +16,6 @@ public class PlayerController : MonoBehaviour
 
     private CharacterController characterController;
     public Weapon_System weapon_System;
-    public GameObject player;
     private bool isIdle = false;
     private bool isJump = false;
     private bool isDead = false;
@@ -62,7 +60,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
-        cameraTransform = transform.GetChild(0);
         playerAnim = gameObject.GetComponentInChildren<Animator>();
         playerState = PLAYERSTATE.IDLE;
         maxHp = hp;
@@ -77,20 +74,17 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        //float h = Input.GetAxisRaw("Horizontal");
+        //float v = Input.GetAxisRaw("Vertical");
 
-        Vector3 moveDirection = new Vector3(h, 0, v);
+        //Vector3 moveDirection = new Vector3(h, 0, v);
 
-        if (!(h == 0 && v == 0) && !isGuard)
-        {
-            // 이동과 회전을 함께 처리
-            transform.position += moveDirection * moveSpeed * Time.deltaTime;
-            // 회전하는 부분. Point 1.
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * rotateSpeed);
-        }
+        //moveDirection *= moveSpeed;
 
-        moveDirection *= moveSpeed;
+        Vector3 forward = tPSCam.transform.TransformDirection(Vector3.forward);
+        Vector3 right = tPSCam.transform.TransformDirection(Vector3.right);
+
+        Vector3 moveDirection = forward * Input.GetAxisRaw("Vertical") + right * Input.GetAxisRaw("Horizontal");
 
         if (characterController.isGrounded)
         {
@@ -104,7 +98,8 @@ public class PlayerController : MonoBehaviour
         yVelocity += (gravity * Time.deltaTime);
         moveDirection.y = yVelocity;
 
-        characterController.Move(moveDirection * Time.deltaTime);
+        //characterController.Move(moveDirection * Time.deltaTime);
+        characterController.Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
 
         if (transform.position.y < -2f)
         {
@@ -126,49 +121,49 @@ public class PlayerController : MonoBehaviour
                 moveSpeed = 5f;
                 jumpSpeed = 10f;
                 weapon_System.isAttack = false;
-                //player.transform.rotation = Quaternion.identity;
                 InputChecker();
                 break;
 
             #region KEYUP
             case PLAYERSTATE.RUN:
                 weapon_System.isAttack = false;
-                if (Input.GetKeyUp(KeyCode.W)|| Input.GetKeyUp(KeyCode.A)|| Input.GetKeyUp(KeyCode.S)|| Input.GetKeyUp(KeyCode.D))
+                if (Input.GetKeyUp(KeyCode.W))
+                {
+                    IdleState();
+                }
+                InputChecker();
+                break;
+            case PLAYERSTATE.RUNBACK:
+                if (Input.GetKeyUp(KeyCode.S))
                 {
                     IdleState();
                 }
                 break;
-            case PLAYERSTATE.RUNBACK:
-                //if (Input.GetKeyUp(KeyCode.S))
-                //{
-                //    IdleState();
-                //}
-                break;
             case PLAYERSTATE.MOVER:
-                //if(Input.GetKeyUp(KeyCode.D))
-                //{
-                //    if (Input.GetKey(KeyCode.A))
-                //    {
-                //        playerState = PLAYERSTATE.MOVEL;
-                //    }
-                //    else
-                //    {
-                //        IdleState();
-                //    }
-                //}
+                if (Input.GetKeyUp(KeyCode.D))
+                {
+                    if (Input.GetKey(KeyCode.A))
+                    {
+                        playerState = PLAYERSTATE.MOVEL;
+                    }
+                    else
+                    {
+                        IdleState();
+                    }
+                }
                 break;
             case PLAYERSTATE.MOVEL:
-                //if(Input.GetKeyUp(KeyCode.A))
-                //{
-                //    if (Input.GetKey(KeyCode.D))
-                //    {
-                //        playerState = PLAYERSTATE.MOVER;
-                //    }
-                //    else
-                //    {
-                //        IdleState();
-                //    }
-                //}
+                if (Input.GetKeyUp(KeyCode.A))
+                {
+                    if (Input.GetKey(KeyCode.D))
+                    {
+                        playerState = PLAYERSTATE.MOVER;
+                    }
+                    else
+                    {
+                        IdleState();
+                    }
+                }
                 break;
             #endregion
 
@@ -260,29 +255,38 @@ public class PlayerController : MonoBehaviour
         playerAnim.SetBool("ableGuard", ableGuard);
     }
 
+    public float smoothness = 10f;
+    public void LateUpdate()
+    {
+        if(!isGuard)
+        {
+            Vector3 playerRotate = Vector3.Scale(tPSCam.transform.forward, new Vector3(1, 0, 1));
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRotate), Time.deltaTime * smoothness);
+        }
+    }
     public void InputChecker()
     {
         if(!isDamaged || !isGuard)
         {
-            if (Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.W))
             {
                 RunState();
             }
-            //if (Input.GetKey(KeyCode.S))
-            //{
-            //    playerState = PLAYERSTATE.RUNBACK;
+            if (Input.GetKey(KeyCode.S))
+            {
+                playerState = PLAYERSTATE.RUNBACK;
 
-            //}
-            //if (Input.GetKey(KeyCode.D))
-            //{
-            //    playerState = PLAYERSTATE.MOVER;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                playerState = PLAYERSTATE.MOVER;
 
-            //}
-            //if (Input.GetKey(KeyCode.A))
-            //{
-            //    playerState = PLAYERSTATE.MOVEL;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                playerState = PLAYERSTATE.MOVEL;
 
-            //}
+            }
             //if(Input.GetKey(KeyCode.Space))
             //{
             //    playerState = PLAYERSTATE.JUMP;

@@ -3258,6 +3258,11 @@ MonoBehaviour:
   distance: 3
   minDistance: 1
   maxDistance: 10
+--- !u!20 &963194238 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 7977767545127731789, guid: 506345ff8afc28947999a7b85e600529, type: 3}
+  m_PrefabInstance: {fileID: 7977767544433127230}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &968436798
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7338,6 +7343,18 @@ PrefabInstance:
     - target: {fileID: 1515823521, guid: 506345ff8afc28947999a7b85e600529, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7977767544209071560, guid: 506345ff8afc28947999a7b85e600529, type: 3}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 963194238}
+    - target: {fileID: 7977767544209071560, guid: 506345ff8afc28947999a7b85e600529, type: 3}
+      propertyPath: tPSCam
+      value: 
+      objectReference: {fileID: 963194225}
+    - target: {fileID: 7977767544209071560, guid: 506345ff8afc28947999a7b85e600529, type: 3}
+      propertyPath: moveSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7977767544209071562, guid: 506345ff8afc28947999a7b85e600529, type: 3}
       propertyPath: m_RootOrder
