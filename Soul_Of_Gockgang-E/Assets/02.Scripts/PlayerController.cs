@@ -256,6 +256,7 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
             case PLAYERSTATE.DEAD:
+                isDead = true;
                 isIdle = false;
                 weapon_System.isAttack = false;
                 isATK = false;
