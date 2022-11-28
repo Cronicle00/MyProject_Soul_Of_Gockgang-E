@@ -13,4 +13,8 @@ public class MonsterAnimEvent : MonoBehaviour
     {
         monsterController.speed = 5;
     }
+    public void Dead()
+    {
+        monsterController.Dead();
+    }
 }

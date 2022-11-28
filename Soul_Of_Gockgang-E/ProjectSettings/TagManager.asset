@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - SandBag
   - Weapon
+  - Gold
   layers:
   - Default
   - TransparentFX

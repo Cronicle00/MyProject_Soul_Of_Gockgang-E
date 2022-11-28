@@ -32,6 +32,8 @@ public class MonsterController : MonoBehaviour
 
     private bool isAttack;
     public float distance;
+
+    public GameObject gold;
     // Start is called before the first frame update
     void Start()
     {
@@ -110,7 +112,7 @@ public class MonsterController : MonoBehaviour
                 isAttack = false;
                 speed = 0;
                 enemyCharacterController.enabled = false;
-                Destroy(gameObject, 3f);
+                Destroy(gameObject, 2.5f);
                 break;
             default:
                 break;
@@ -121,22 +123,25 @@ public class MonsterController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(isAttack)
-        {
+
             if (other.gameObject.tag == "Weapon")
             {
                 --hp;
                 enemyState = ENEMYSTATE.DAMAGE;
             }
-        }
     }
 
     public void PlayerDamageByEnemy()
     {
-        if(distance < attackRange)
+        if(distance < attackRange && isAttack)
         {
             playerState.DamageByEnemy();
         }
+    }
+    public void Dead()
+    {
+        Instantiate(gold, transform.position, transform.rotation);
+        GetComponentInChildren<EnemyHpBar>().DestroyHpBar();
     }
     //private void OnCollisionEnter(Collision collision)
     //{ 

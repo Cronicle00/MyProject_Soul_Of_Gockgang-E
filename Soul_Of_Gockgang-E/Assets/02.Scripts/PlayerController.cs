@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
         maxHp = hp;
         maxStamina = stamina;
         timerActive = false;
+        isATK = weapon_System.isAttack;
     }
 
     // Update is called once per frame
