@@ -45,7 +45,7 @@ public class Gold_Manage : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-
+            
         }
     }
 }
