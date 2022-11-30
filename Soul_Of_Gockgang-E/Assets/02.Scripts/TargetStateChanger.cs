@@ -21,14 +21,28 @@ public class TargetStateChanger : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            MonsterStateChanger();
+            MonsterStateChangerIN();
         }
     }
-    public void MonsterStateChanger()
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.gameObject.tag == "Player")
+    //    {
+    //        MonsterStateChangerOUT();
+    //    }
+    //}
+    public void MonsterStateChangerIN()
     {
         for (int i = 0; i < stageMonsters.Count; i++)
         {
             stageMonsters[i].activeTracking = true;
         }
-    }    
+    }
+    public void MonsterStateChangerOUT()
+    {
+        for (int i = 0; i < stageMonsters.Count; i++)
+        {
+            stageMonsters[i].activeTracking = false;
+        }
+    }
 }
