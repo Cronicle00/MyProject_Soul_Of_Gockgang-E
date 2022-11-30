@@ -8,8 +8,10 @@ public class PlayerUIController : MonoBehaviour
     public PlayerController playerController;
     public Slider playerHP;
     public Slider stamina;
+    public Text gold;
     void Start()
     {
+        gold.text = "MONEY " + playerController.gold + "Gold";
     }
 
 
@@ -17,5 +19,6 @@ public class PlayerUIController : MonoBehaviour
     {
         playerHP.value = (float)playerController.hp;
         stamina.value = (float)playerController.stamina;
+        gold.text = "MONEY " + playerController.gold + "Gold";
     }
 }

@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     private bool isATK_Idle = false;
     private bool isGuard = false;
     private bool ableGuard = true;
+    private bool parringATK = false;
     private Animator playerAnim;
     public GameObject sheildHitVFX;
     public GameObject sheildPos;
@@ -363,6 +364,11 @@ public class PlayerController : MonoBehaviour
             stamina -= 0.5f;
             GameObject hitvfx = Instantiate<GameObject>(sheildHitVFX, sheildPos.transform.position, sheildPos.transform.rotation);
             Destroy(hitvfx, 1.0f);
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                parringATK = true;
+                playerState = PLAYERSTATE.ATTACK_IDLE;
+            }
             //playerState = PLAYERSTATE.BLOCK;
         }
         else

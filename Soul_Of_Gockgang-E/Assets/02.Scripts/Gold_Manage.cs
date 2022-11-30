@@ -5,6 +5,7 @@ using UnityEngine;
 public class Gold_Manage : MonoBehaviour
 {
     public int gold = 0;
+    private PlayerController playerController;
 
     public enum MONSTERGRADE
     {
@@ -18,6 +19,7 @@ public class Gold_Manage : MonoBehaviour
 
     private void Start()
     {
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         CoinPrice();
     }
     public void CoinPrice()
@@ -45,7 +47,9 @@ public class Gold_Manage : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            
+            Debug.Log("Added Gold");
+            playerController.gold += gold;
+            Destroy(gameObject);
         }
     }
 }

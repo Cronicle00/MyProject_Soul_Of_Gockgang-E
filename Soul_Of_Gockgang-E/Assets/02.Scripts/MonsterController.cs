@@ -33,11 +33,14 @@ public class MonsterController : MonoBehaviour
     private bool isAttack;
     public float distance;
 
+    public bool activeTracking;
+
     public GameObject gold;
     // Start is called before the first frame update
     void Start()
     {
         isAttack = false;
+        activeTracking = false;
         enemyState = ENEMYSTATE.IDLE;
         target = GameObject.FindGameObjectWithTag("Player").transform;
         enemyCharacterController = GetComponent<CharacterController>();
@@ -54,44 +57,53 @@ public class MonsterController : MonoBehaviour
                 isAttack = false;
                 speed = 5;
                 stateTime += Time.deltaTime;
-                if (stateTime > idleStateTime)
+                if(activeTracking)
                 {
-                    stateTime = 0;
-                    enemyState = ENEMYSTATE.MOVE;
+                    if (stateTime > idleStateTime)
+                    {
+                        stateTime = 0;
+                        enemyState = ENEMYSTATE.MOVE;
+                    }
                 }
                 break;
             case ENEMYSTATE.MOVE:
                 isAttack = false;
                 distance = Vector3.Distance(target.position, transform.position);
-                if (distance < attackRange)
+                if (activeTracking)
                 {
-                    enemyState = ENEMYSTATE.ATTACK;
-                    stateTime = 0;
-                }
-                else
-                {
-                    Vector3 dir = target.position - transform.position;
-                    dir.y = 0;
-                    dir.Normalize();
-                    enemyCharacterController.SimpleMove(dir * speed);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), rotationSpeed * Time.deltaTime);
+                    if (distance < attackRange)
+                    {
+                        enemyState = ENEMYSTATE.ATTACK;
+                        stateTime = 0;
+                    }
+                    else
+                    {
+                        Vector3 dir = target.position - transform.position;
+                        dir.y = 0;
+                        dir.Normalize();
+                        enemyCharacterController.SimpleMove(dir * speed);
+                        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), rotationSpeed * Time.deltaTime);
+                    }
                 }
                 break;
             case ENEMYSTATE.ATTACK:
                 isAttack = true;
                 speed = 0;
                 stateTime += Time.deltaTime;
-                if (stateTime > attackStateMaxTime)
+                if (activeTracking)
                 {
-                   // Debug.Log("Attack");
-                    //playerState.DamageByEnemy();
-                    stateTime = 0;
-                }
-                float dist = Vector3.Distance(target.position, transform.position);
-                if (dist > attackRange)
-                {
-                    enemyState = ENEMYSTATE.MOVE;
-                    stateTime = 0;
+                    if (stateTime > attackStateMaxTime)
+                    {
+                        // Debug.Log("Attack");
+                        //playerState.DamageByEnemy();
+                        stateTime = 0;
+                    }
+                    float dist = Vector3.Distance(target.position, transform.position);
+                    if (dist > attackRange)
+                    {
+                        enemyState = ENEMYSTATE.MOVE;
+                        stateTime = 0;
+                    }
                 }
                 break;
             case ENEMYSTATE.DAMAGE:
