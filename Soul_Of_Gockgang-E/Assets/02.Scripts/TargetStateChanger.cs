@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TargetStateChanger : MonoBehaviour
 {
-    public List<GameObject> stageMonsters;
+    public List<MonsterController> stageMonsters;
 
     // Start is called before the first frame update
     void Start()
@@ -17,4 +17,18 @@ public class TargetStateChanger : MonoBehaviour
     {
         
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            MonsterStateChanger();
+        }
+    }
+    public void MonsterStateChanger()
+    {
+        for (int i = 0; i < stageMonsters.Count; i++)
+        {
+            stageMonsters[i].activeTracking = true;
+        }
+    }    
 }
