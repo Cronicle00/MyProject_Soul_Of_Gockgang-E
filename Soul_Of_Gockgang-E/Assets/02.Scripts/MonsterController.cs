@@ -85,6 +85,11 @@ public class MonsterController : MonoBehaviour
                         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), rotationSpeed * Time.deltaTime);
                     }
                 }
+                else
+                {
+                    activeTracking = false;
+                    enemyState = ENEMYSTATE.IDLE;
+                }
                 break;
             case ENEMYSTATE.ATTACK:
                 isAttack = true;
@@ -155,14 +160,4 @@ public class MonsterController : MonoBehaviour
         Instantiate(gold, transform.position, transform.rotation);
         GetComponentInChildren<EnemyHpBar>().DestroyHpBar();
     }
-    //private void OnCollisionEnter(Collision collision)
-    //{ 
-    //    Debug.Log(collision.gameObject.name);
-    //    Debug.Log(collision.gameObject.tag);
-    //    if (collision.gameObject.tag == "Weapon")
-    //    {
-    //        --hp;
-    //        enemyState = ENEMYSTATE.DAMAGE;
-    //    }
-    //}
 }

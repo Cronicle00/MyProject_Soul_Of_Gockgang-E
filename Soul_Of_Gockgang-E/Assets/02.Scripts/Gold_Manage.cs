@@ -51,5 +51,5 @@ public class Gold_Manage : MonoBehaviour
             playerController.gold += gold;
             Destroy(gameObject);
         }
-    }
+    } 
 }

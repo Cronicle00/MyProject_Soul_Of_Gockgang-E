@@ -6,6 +6,12 @@ public class TargetStateChanger : MonoBehaviour
 {
     public List<MonsterController> stageMonsters;
 
+    public enum TRACKINGSTATE
+    {
+        ON,
+        OFF
+    }
+    public TRACKINGSTATE trackingState;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +27,17 @@ public class TargetStateChanger : MonoBehaviour
     { 
         if (other.gameObject.tag == "Player")
         {
-            MonsterStateChangerIN();
+            switch (trackingState)
+            {
+                case TRACKINGSTATE.ON:
+                    MonsterStateChangerIN();
+                    break;
+                case TRACKINGSTATE.OFF:
+                    MonsterStateChangerOUT();
+                    break;
+                default:
+                    break;
+            }
         }
     }
     //private void OnTriggerExit(Collider other)
