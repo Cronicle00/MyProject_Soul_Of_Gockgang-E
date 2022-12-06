@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Go_Next : MonoBehaviour
 {
-    public int nS;
+    public string nS;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +21,7 @@ public class Go_Next : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            SceneManager.LoadScene("OutSideHome");
+            SceneManager.LoadScene(nS);
 
         }
     }
