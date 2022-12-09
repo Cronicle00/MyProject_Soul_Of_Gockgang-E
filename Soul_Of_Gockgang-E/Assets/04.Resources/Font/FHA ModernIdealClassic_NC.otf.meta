@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 8cf97be7165f2834c8b825fedf10bede
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - FHA Modernized Ideal ClassicNC
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 3c8744fdd6a34a140bab5626a62c0501, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

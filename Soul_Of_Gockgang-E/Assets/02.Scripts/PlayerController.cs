@@ -293,17 +293,14 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKey(KeyCode.S))
             {
                 playerState = PLAYERSTATE.RUNBACK;
-
             }
             if (Input.GetKey(KeyCode.D))
             {
                 playerState = PLAYERSTATE.MOVER;
-
             }
             if (Input.GetKey(KeyCode.A))
             {
                 playerState = PLAYERSTATE.MOVEL;
-
             }
             //if(Input.GetKey(KeyCode.Space))
             //{
@@ -313,7 +310,7 @@ public class PlayerController : MonoBehaviour
             {
                 playerState = PLAYERSTATE.ATTACK_IDLE;
             }
-            if(stamina > 0)
+            if(stamina > 0 && characterController.isGrounded)
             {
                 if (Input.GetKeyDown(KeyCode.Mouse1))
                 {

@@ -35,6 +35,7 @@ public class MonsterController : MonoBehaviour
 
     public bool activeTracking;
 
+    public GameObject blood;
     public GameObject gold;
     // Start is called before the first frame update
     void Start()
@@ -113,6 +114,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case ENEMYSTATE.DAMAGE:
                 isAttack = false;
+                //GameObject bloodVfx = Instantiate<GameObject>(blood, transform.position, transform.rotation);
                 speed = 0;
                 stateTime += Time.deltaTime;
                 if (stateTime > 1f)

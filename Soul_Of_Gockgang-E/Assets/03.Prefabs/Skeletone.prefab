@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: 8231868220973535792}
   - component: {fileID: 8231868220973535795}
   m_Layer: 0
-  m_Name: Monster
+  m_Name: Skeletone
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,6 +182,8 @@ MonoBehaviour:
   hp: 10
   playerState: {fileID: 0}
   distance: 0
+  activeTracking: 0
+  blood: {fileID: 100000, guid: bc98890f6028f444eaa7789bde5e2eeb, type: 3}
   gold: {fileID: 1950871307682000, guid: 01348926c7cbb3347a006c37204131c3, type: 3}
 --- !u!54 &8231868220973535795
 Rigidbody:
